@@ -29,7 +29,7 @@ end
 
 helpers do
   def turbo_request?
-    request["Turbo-Frame"] == "true"
+    !!request.get_header("HTTP_TURBO_FRAME")
   end
 end
 
