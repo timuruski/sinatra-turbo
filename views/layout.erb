@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Sinatra but Fast</title>
-    <script src="https://cdn.skypack.dev/@hotwired/turbo"></script>
+    <title>Sinatra, but Turbo</title>
+    <script type="module">
+      import hotwiredTurbo from 'https://cdn.skypack.dev/@hotwired/turbo';
+    </script>
   </head>
 
   <body>
+    <h1>Sinatra but Fast!</h1>
     <%= yield %>
   </body>
 </html>
