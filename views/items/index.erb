@@ -1,6 +1,14 @@
-<div>
-  <p><a href="<%= url("/items/new") %>">New Item</a></p>
+<div id="new_item">
+  <form action="<%= url("/items") %>" method="post" data-turbo="true">
+    <label for="name">
+      <input id="name" type="text" name="item[name]">
+    </label>
 
+    <input type="submit" value="Add item">
+  </form>
+</div>
+
+<div id="items">
   <% items.each do |item| %>
     <%= erb :"items/show", locals: { item: item }, layout: false %>
   <% end %>

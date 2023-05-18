@@ -11,6 +11,7 @@ module Helpers
 end
 
 helpers Helpers::TurboHelper
+mime_type(:turbo_stream, "text/vnd.turbo-stream.html")
 enable :method_override
 
 get "/" do
@@ -25,6 +26,11 @@ end
 get "/items/new" do
   item = Item.new
   erb :"items/new", locals: { item: item }
+end
+
+post "/items/?", provides: :turbo_stream do
+  item = Item.create(name: params.dig(:item, :name))
+  erb :"items/create.turbo_stream", locals: { item: item }, layout: false
 end
 
 post "/items/?" do
@@ -51,6 +57,13 @@ put "/items/:id" do
   else
     redirect "/items/#{item.id}"
   end
+end
+
+delete "/items/:id", provides: :turbo_stream do
+  item = Item[params[:id]]
+  item.destroy
+
+  erb :"items/destroy.turbo_stream", locals: { item: item }, layout: false
 end
 
 delete "/items/:id" do

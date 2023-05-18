@@ -1,0 +1,19 @@
+<turbo-stream action="replace" target="new_item">
+  <template>
+    <div id="new_item">
+      <form action="<%= url("/items") %>" method="post">
+        <label for="name">
+          <input id="name" type="text" name="item[name]">
+        </label>
+
+        <input type="submit" value="Add item">
+      </form>
+    </div>
+  </template>
+</turbo-stream>
+
+<turbo-stream action="append" target="items">
+  <template>
+    <%= erb :"items/show", locals: { item: item }, layout: false %>
+  </template>
+</turbo-stream>
