@@ -1,0 +1,14 @@
+<turbo-frame id="<%= item.dom_id %>">
+  <form action="<%= url("/items/#{item.id}") %>" method="post">
+    <input type="hidden" name="_method" value="put">
+
+    <div class="flex flex-row">
+      <label for="name">
+        <span>Name</span>
+        <input id="name" type="text" name="item[name]" value="<%= item.name %>">
+      </label>
+
+      <input type="submit" value="Update">
+    </div>
+  </form>
+</turbo-frame>

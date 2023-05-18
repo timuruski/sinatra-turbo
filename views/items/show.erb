@@ -1,0 +1,10 @@
+<turbo-frame id="<%= item.dom_id %>">
+  <div class="flex flex-row">
+    <p><%= item.id %>: <%= item.name %></p>
+    <p><a href="<%= url("/items/#{item.id}/edit") %>">Edit</a></p>
+    <form action="<%= url("/items/#{item.id}") %>" method="post" data-turbo="false">
+      <input type="hidden" name="_method" value="delete">
+      <input type="submit" value="Delete" data-confirm="Are you sure?">
+    </form>
+  </div>
+</turbo-frame>

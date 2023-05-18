@@ -1,45 +1,61 @@
-require "bundler/setup"
 require "sinatra"
 
-class Banner < Struct.new(:id)
-  DB = {
-    "123" => Banner.new(id: "123"),
-    "234" => Banner.new(id: "234"),
-    "345" => Banner.new(id: "345")
-  }
+require_relative "env"
 
-  def self.find(id)
-    DB.fetch(id)
-  end
-
-  def self.each(&block)
-    DB.each do |_, banner|
-      yield banner
+module Helpers
+  module TurboHelper
+    def turbo_request?
+      !!request.get_header("HTTP_TURBO_FRAME")
     end
   end
-
-  def timestamp
-    Time.now.strftime("%r")
-  end
-
-  def dom_id
-    "banner_#{id}"
-  end
 end
 
-helpers do
-  def turbo_request?
-    !!request.get_header("HTTP_TURBO_FRAME")
-  end
-end
+helpers Helpers::TurboHelper
+enable :method_override
 
 get "/" do
-  erb :homepage
+  redirect "/items"
 end
 
-get "/banner/:id" do
-  banner = Banner.find(params[:id])
-  erb :banner, locals: { banner: banner }, layout: !turbo_request?
-rescue KeyError
-  halt 404, "Not found"
+get "/items/?" do
+  items = Item.all
+  erb :"items/index", locals: { items: items }
+end
+
+get "/items/new" do
+  item = Item.new
+  erb :"items/new", locals: { item: item }
+end
+
+post "/items/?" do
+  item = Item.create(name: params.dig(:item, :name))
+  redirect "/items/#{item.id}"
+end
+
+get "/items/:id" do
+  item = Item[params[:id]]
+  erb :"items/show", locals: { item: item }, layout: !turbo_request?
+end
+
+get "/items/:id/edit" do
+  item = Item[params[:id]]
+  erb :"items/edit", locals: { item: item }, layout: !turbo_request?
+end
+
+put "/items/:id" do
+  item = Item[params[:id]]
+  item.update(name: params.dig(:item, :name))
+
+  if turbo_request?
+    erb :"items/show", locals: { item: item }, layout: false
+  else
+    redirect "/items/#{item.id}"
+  end
+end
+
+delete "/items/:id" do
+  item = Item[params[:id]]
+  item.destroy
+
+  redirect "/items"
 end

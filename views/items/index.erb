@@ -1,0 +1,7 @@
+<div>
+  <p><a href="<%= url("/items/new") %>">New Item</a></p>
+
+  <% items.each do |item| %>
+    <%= erb :"items/show", locals: { item: item }, layout: false %>
+  <% end %>
+</div>

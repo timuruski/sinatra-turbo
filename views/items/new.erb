@@ -1,0 +1,7 @@
+<form action="<%= url("/items") %>" method="post">
+  <label for="name">
+    <input id="name" type="text" name="item[name]" value="<%= item.name %>">
+  </label>
+
+  <input type="submit" value="Add item">
+</form>
