@@ -1,4 +1,5 @@
 require "sinatra"
+require "sinatra/respond_with"
 
 require_relative "env"
 
@@ -7,12 +8,16 @@ module Helpers
     def turbo_request?
       !!request.get_header("HTTP_TURBO_FRAME")
     end
+
+    def turbo_stream?
+      request.accept?(mime_type(:turbo_stream))
+    end
   end
 end
 
-helpers Helpers::TurboHelper
 mime_type(:turbo_stream, "text/vnd.turbo-stream.html")
 enable :method_override
+helpers Helpers::TurboHelper
 
 get "/" do
   redirect "/items"
@@ -28,14 +33,17 @@ get "/items/new" do
   erb :"items/new", locals: { item: item }
 end
 
-post "/items/?", provides: :turbo_stream do
-  item = Item.create(name: params.dig(:item, :name))
-  erb :"items/create.turbo_stream", locals: { item: item }, layout: false
-end
-
 post "/items/?" do
   item = Item.create(name: params.dig(:item, :name))
-  redirect "/items/#{item.id}"
+
+  respond_to do |format|
+    format.on(:turbo_stream) do
+      erb :"items/create.turbo_stream", locals: { item: item }, layout: false
+    end
+    format.on(:html) do
+      redirect "/items/#{item.id}"
+    end
+  end
 end
 
 get "/items/:id" do
@@ -63,12 +71,12 @@ delete "/items/:id", provides: :turbo_stream do
   item = Item[params[:id]]
   item.destroy
 
-  erb :"items/destroy.turbo_stream", locals: { item: item }, layout: false
-end
-
-delete "/items/:id" do
-  item = Item[params[:id]]
-  item.destroy
-
-  redirect "/items"
+  respond_to do |format|
+    format.on(:turbo_stream) do
+      erb :"items/destroy.turbo_stream", locals: { item: item }, layout: false
+    end
+    format.on(:html) do
+      redirect "/items"
+    end
+  end
 end

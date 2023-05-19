@@ -1,7 +1,7 @@
 <turbo-stream action="replace" target="new_item">
   <template>
     <div id="new_item">
-      <form action="<%= url("/items") %>" method="post">
+      <form action="<%= url("/items") %>" method="post" data-turbo="true">
         <label for="name">
           <input id="name" type="text" name="item[name]">
         </label>
